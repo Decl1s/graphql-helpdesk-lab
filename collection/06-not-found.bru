@@ -29,3 +29,27 @@ assert {
   res.body.data.ticket: isNull
   res.body.errors: isUndefined
 }
+
+docs {
+  ## 06-not-found: Я проверяю отсутствие записи.
+
+  ### Зачем я это делаю
+
+  Я различаю неизвестный ID и запрещённый доступ. Для неизвестного T-9999 контракт обещает null без ошибки.
+
+  ### Что я отправляю
+
+  Я выбираю роль: `customer-a`. Я отправляю POST на адрес окружения baseUrl с путём /graphql. Я сохраняю Content-Type application/json и Accept application/graphql-response+json.
+
+  ### Как я читаю Assert
+
+  - Я проверяю `res.status`: равенство с ожидаемым значением `200`.
+  - Я проверяю `res.body.data.ticket`: значение null.
+  - Я проверяю `res.body.errors`: отсутствие поля.
+
+  ### Что я могу изменить
+
+  Я заменяю ID на T-1001. Я ожидаю объект; старый Assert isNull должен стать красным.
+
+  Я выполняю опыт в копии запроса. Перед возвратом к регрессии я начинаю весь набор заново с reset.
+}

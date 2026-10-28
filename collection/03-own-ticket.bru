@@ -32,3 +32,28 @@ assert {
   res.body.data.ticket.owner.id: eq customer-a
   res.body.errors: isUndefined
 }
+
+docs {
+  ## 03-own-ticket: Я читаю своё обращение вместе с владельцем.
+
+  ### Зачем я это делаю
+
+  Я передаю id через Variables, чтобы менять данные без переписывания структуры Query. В owner я выбираю вложенные поля.
+
+  ### Что я отправляю
+
+  Я выбираю роль: `customer-a`. Я отправляю POST на адрес окружения baseUrl с путём /graphql. Я сохраняю Content-Type application/json и Accept application/graphql-response+json.
+
+  ### Как я читаю Assert
+
+  - Я проверяю `res.status`: равенство с ожидаемым значением `200`.
+  - Я проверяю `res.body.data.ticket.id`: равенство с ожидаемым значением `T-1001`.
+  - Я проверяю `res.body.data.ticket.owner.id`: равенство с ожидаемым значением `customer-a`.
+  - Я проверяю `res.body.errors`: отсутствие поля.
+
+  ### Что я могу изменить
+
+  Я меняю id на T-1003. Я ожидаю другое id и статус RESOLVED; owner остаётся customer-a. Я меняю Assert id и добавляю проверку статуса.
+
+  Я выполняю опыт в копии запроса. Перед возвратом к регрессии я начинаю весь набор заново с reset.
+}

@@ -30,3 +30,28 @@ assert {
   res.body.data.me.role: eq CUSTOMER
   res.body.errors: isUndefined
 }
+
+docs {
+  ## 02-me: Я выясняю, какую персону выбрал заголовком.
+
+  ### Зачем я это делаю
+
+  Я проверяю не просто наличие ответа, а конкретные id и роль CUSTOMER. Так я замечаю ошибку окружения до изменения обращений.
+
+  ### Что я отправляю
+
+  Я выбираю роль: `customer-a`. Я отправляю POST на адрес окружения baseUrl с путём /graphql. Я сохраняю Content-Type application/json и Accept application/graphql-response+json.
+
+  ### Как я читаю Assert
+
+  - Я проверяю `res.status`: равенство с ожидаемым значением `200`.
+  - Я проверяю `res.body.data.me.id`: равенство с ожидаемым значением `customer-a`.
+  - Я проверяю `res.body.data.me.role`: равенство с ожидаемым значением `CUSTOMER`.
+  - Я проверяю `res.body.errors`: отсутствие поля.
+
+  ### Что я могу изменить
+
+  Я меняю X-Demo-Actor на staff и ожидаю id staff и роль STAFF. Я меняю соответствующие два Assert в собственной копии запроса.
+
+  Я выполняю опыт в копии запроса. Перед возвратом к регрессии я начинаю весь набор заново с reset.
+}

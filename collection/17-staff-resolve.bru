@@ -30,3 +30,28 @@ assert {
   res.body.data.changeStatus.userErrors: length 0
   res.body.errors: isUndefined
 }
+
+docs {
+  ## 17-staff-resolve: Я выполняю второй разрешённый переход.
+
+  ### Зачем я это делаю
+
+  Я ожидаю IN_PROGRESS от предыдущего шага и перевожу обращение в RESOLVED. Пустой userErrors подтверждает бизнес-успех.
+
+  ### Что я отправляю
+
+  Я выбираю роль: `staff`. Я отправляю POST на адрес окружения baseUrl с путём /graphql. Я сохраняю Content-Type application/json и Accept application/graphql-response+json.
+
+  ### Как я читаю Assert
+
+  - Я проверяю `res.status`: равенство с ожидаемым значением `200`.
+  - Я проверяю `res.body.data.changeStatus.ticket.status`: равенство с ожидаемым значением `RESOLVED`.
+  - Я проверяю `res.body.data.changeStatus.userErrors`: длину массива с ожидаемым значением `0`.
+  - Я проверяю `res.body.errors`: отсутствие поля.
+
+  ### Что я могу изменить
+
+  Я пробую выполнить запрос сразу после 11. Я ожидаю BAD_TRANSITION, потому что OPEN → RESOLVED не разрешён.
+
+  Я выполняю опыт в копии запроса. Перед возвратом к регрессии я начинаю весь набор заново с reset.
+}

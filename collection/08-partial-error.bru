@@ -31,3 +31,29 @@ assert {
   res.body.errors[0].extensions.code: eq FORBIDDEN
   res.body.errors[0].path[1]: eq internalNote
 }
+
+docs {
+  ## 08-partial-error: Я проверяю частично доступный объект.
+
+  ### Зачем я это делаю
+
+  Я запрашиваю своё обращение, но закрытое поле internalNote. Я ожидаю id и title, null заметки и path ошибки к этой заметке.
+
+  ### Что я отправляю
+
+  Я выбираю роль: `customer-a`. Я отправляю POST на адрес окружения baseUrl с путём /graphql. Я сохраняю Content-Type application/json и Accept application/graphql-response+json.
+
+  ### Как я читаю Assert
+
+  - Я проверяю `res.status`: равенство с ожидаемым значением `200`.
+  - Я проверяю `res.body.data.ticket.id`: равенство с ожидаемым значением `T-1001`.
+  - Я проверяю `res.body.data.ticket.internalNote`: значение null.
+  - Я проверяю `res.body.errors[0].extensions.code`: равенство с ожидаемым значением `FORBIDDEN`.
+  - Я проверяю `res.body.errors[0].path[1]`: равенство с ожидаемым значением `internalNote`.
+
+  ### Что я могу изменить
+
+  Я меняю роль на staff. Я ожидаю строку internalNote и отсутствие errors; эти ожидания заменяют isNull и FORBIDDEN.
+
+  Я выполняю опыт в копии запроса. Перед возвратом к регрессии я начинаю весь набор заново с reset.
+}

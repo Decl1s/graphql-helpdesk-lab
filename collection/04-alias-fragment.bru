@@ -31,3 +31,28 @@ assert {
   res.body.data.closed.status: eq RESOLVED
   res.body.errors: isUndefined
 }
+
+docs {
+  ## 04-alias-fragment: Я читаю два обращения одним запросом.
+
+  ### Зачем я это делаю
+
+  Я называю результаты current и closed через aliases. Fragment Summary повторно задаёт набор id и status.
+
+  ### Что я отправляю
+
+  Я выбираю роль: `customer-a`. Я отправляю POST на адрес окружения baseUrl с путём /graphql. Я сохраняю Content-Type application/json и Accept application/graphql-response+json.
+
+  ### Как я читаю Assert
+
+  - Я проверяю `res.status`: равенство с ожидаемым значением `200`.
+  - Я проверяю `res.body.data.current.status`: равенство с ожидаемым значением `OPEN`.
+  - Я проверяю `res.body.data.closed.status`: равенство с ожидаемым значением `RESOLVED`.
+  - Я проверяю `res.body.errors`: отсутствие поля.
+
+  ### Что я могу изменить
+
+  Я добавляю title внутрь fragment Summary. Я ожидаю title сразу в current и closed, не дублируя поле в двух местах.
+
+  Я выполняю опыт в копии запроса. Перед возвратом к регрессии я начинаю весь набор заново с reset.
+}

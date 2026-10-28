@@ -31,3 +31,29 @@ assert {
   res.body.data.createTicket.userErrors[0].field: eq title
   res.body.errors: isUndefined
 }
+
+docs {
+  ## 13-empty-title: Я проверяю бизнес-ограничение title.
+
+  ### Зачем я это делаю
+
+  Я отправляю корректный GraphQL с заголовком из пробелов. После trim он пустой; я ожидаю TITLE_INVALID внутри userErrors, без верхнеуровневой errors.
+
+  ### Что я отправляю
+
+  Я выбираю роль: `customer-a`. Я отправляю POST на адрес окружения baseUrl с путём /graphql. Я сохраняю Content-Type application/json и Accept application/graphql-response+json.
+
+  ### Как я читаю Assert
+
+  - Я проверяю `res.status`: равенство с ожидаемым значением `200`.
+  - Я проверяю `res.body.data.createTicket.ticket`: значение null.
+  - Я проверяю `res.body.data.createTicket.userErrors[0].code`: равенство с ожидаемым значением `TITLE_INVALID`.
+  - Я проверяю `res.body.data.createTicket.userErrors[0].field`: равенство с ожидаемым значением `title`.
+  - Я проверяю `res.body.errors`: отсутствие поля.
+
+  ### Что я могу изменить
+
+  Я заменяю title на abc и ожидаю успешное создание. Я отдельно сравниваю длины 2, 3, 80 и 81.
+
+  Я выполняю опыт в копии запроса. Перед возвратом к регрессии я начинаю весь набор заново с reset.
+}

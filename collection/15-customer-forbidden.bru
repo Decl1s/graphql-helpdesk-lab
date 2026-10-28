@@ -29,3 +29,27 @@ assert {
   res.body.data.changeStatus: isNull
   res.body.errors[0].extensions.code: eq FORBIDDEN
 }
+
+docs {
+  ## 15-customer-forbidden: Я проверяю запрет записи клиенту.
+
+  ### Зачем я это делаю
+
+  Я выбираю customer-a и пытаюсь менять статус T-2001. Правило разрешает это только staff. Этот запрос обнаруживает намеренный режим дефекта.
+
+  ### Что я отправляю
+
+  Я выбираю роль: `customer-a`. Я отправляю POST на адрес окружения baseUrl с путём /graphql. Я сохраняю Content-Type application/json и Accept application/graphql-response+json.
+
+  ### Как я читаю Assert
+
+  - Я проверяю `res.status`: равенство с ожидаемым значением `200`.
+  - Я проверяю `res.body.data.changeStatus`: значение null.
+  - Я проверяю `res.body.errors[0].extensions.code`: равенство с ожидаемым значением `FORBIDDEN`.
+
+  ### Что я могу изменить
+
+  Я включаю сервер с --training-bug и повторяю всю коллекцию. Я ожидаю успешное изменение вместо запрета и красный Assert на null.
+
+  Я выполняю опыт в копии запроса. Перед возвратом к регрессии я начинаю весь набор заново с reset.
+}

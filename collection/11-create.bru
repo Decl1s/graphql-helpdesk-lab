@@ -37,3 +37,30 @@ assert {
   res.body.data.createTicket.userErrors: length 0
   res.body.errors: isUndefined
 }
+
+docs {
+  ## 11-create: Я создаю новое обращение и проверяю нормализацию.
+
+  ### Зачем я это делаю
+
+  Я передаю input с пробелами вокруг title. Сервер удаляет их по краям, присваивает T-2001 после reset и ставит OPEN.
+
+  ### Что я отправляю
+
+  Я выбираю роль: `customer-a`. Я отправляю POST на адрес окружения baseUrl с путём /graphql. Я сохраняю Content-Type application/json и Accept application/graphql-response+json.
+
+  ### Как я читаю Assert
+
+  - Я проверяю `res.status`: равенство с ожидаемым значением `200`.
+  - Я проверяю `res.body.data.createTicket.ticket.id`: равенство с ожидаемым значением `T-2001`.
+  - Я проверяю `res.body.data.createTicket.ticket.title`: равенство с ожидаемым значением `Проверка формы`.
+  - Я проверяю `res.body.data.createTicket.ticket.status`: равенство с ожидаемым значением `OPEN`.
+  - Я проверяю `res.body.data.createTicket.userErrors`: длину массива с ожидаемым значением `0`.
+  - Я проверяю `res.body.errors`: отсутствие поля.
+
+  ### Что я могу изменить
+
+  Я меняю title на другой текст с пробелами и проверяю очищенный результат. Я начинаю с reset, иначе фиксированный ID будет другим.
+
+  Я выполняю опыт в копии запроса. Перед возвратом к регрессии я начинаю весь набор заново с reset.
+}

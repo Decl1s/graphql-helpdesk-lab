@@ -30,3 +30,28 @@ assert {
   res.body.errors[0].extensions.code: eq FORBIDDEN
   res.body.errors[0].path[0]: eq ticket
 }
+
+docs {
+  ## 07-foreign-ticket: Я пытаюсь прочитать чужое обращение.
+
+  ### Зачем я это делаю
+
+  Я выбираю customer-a, а обращение T-1002 принадлежит customer-b. HTTP 200 здесь сопровождается errors, поэтому я проверяю code и null.
+
+  ### Что я отправляю
+
+  Я выбираю роль: `customer-a`. Я отправляю POST на адрес окружения baseUrl с путём /graphql. Я сохраняю Content-Type application/json и Accept application/graphql-response+json.
+
+  ### Как я читаю Assert
+
+  - Я проверяю `res.status`: равенство с ожидаемым значением `200`.
+  - Я проверяю `res.body.data.ticket`: значение null.
+  - Я проверяю `res.body.errors[0].extensions.code`: равенство с ожидаемым значением `FORBIDDEN`.
+  - Я проверяю `res.body.errors[0].path[0]`: равенство с ожидаемым значением `ticket`.
+
+  ### Что я могу изменить
+
+  Я меняю роль на customer-b и ожидаю успешный объект без errors. Я не считаю старое ожидание FORBIDDEN правильным после смены роли.
+
+  Я выполняю опыт в копии запроса. Перед возвратом к регрессии я начинаю весь набор заново с reset.
+}

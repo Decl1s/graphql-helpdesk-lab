@@ -30,3 +30,28 @@ assert {
   res.body.data.changeStatus.userErrors[0].code: eq BAD_TRANSITION
   res.body.errors: isUndefined
 }
+
+docs {
+  ## 18-bad-transition: Я пытаюсь снова открыть завершённое обращение.
+
+  ### Зачем я это делаю
+
+  Я ожидаю BAD_TRANSITION и ticket=null внутри payload, а не GraphQL errors. Отказ не должен изменить состояние.
+
+  ### Что я отправляю
+
+  Я выбираю роль: `staff`. Я отправляю POST на адрес окружения baseUrl с путём /graphql. Я сохраняю Content-Type application/json и Accept application/graphql-response+json.
+
+  ### Как я читаю Assert
+
+  - Я проверяю `res.status`: равенство с ожидаемым значением `200`.
+  - Я проверяю `res.body.data.changeStatus.ticket`: значение null.
+  - Я проверяю `res.body.data.changeStatus.userErrors[0].code`: равенство с ожидаемым значением `BAD_TRANSITION`.
+  - Я проверяю `res.body.errors`: отсутствие поля.
+
+  ### Что я могу изменить
+
+  Я читаю запись через 19 и подтверждаю RESOLVED. Я не считаю сам ответ отказа достаточным доказательством отсутствия записи.
+
+  Я выполняю опыт в копии запроса. Перед возвратом к регрессии я начинаю весь набор заново с reset.
+}

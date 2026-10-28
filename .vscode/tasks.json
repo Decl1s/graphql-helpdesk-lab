@@ -1,0 +1,9 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    { "type": "npm", "script": "start", "label": "Я запускаю учебный API", "isBackground": true, "problemMatcher": [] },
+    { "type": "npm", "script": "demo", "label": "Я получаю HTML-отчёт Bruno", "problemMatcher": [] },
+    { "type": "npm", "script": "check", "label": "Я выполняю все проверки копии", "problemMatcher": [], "group": { "kind": "test", "isDefault": true } },
+    { "type": "npm", "script": "package", "label": "Я собираю полный архив исходников", "problemMatcher": [] }
+  ]
+}

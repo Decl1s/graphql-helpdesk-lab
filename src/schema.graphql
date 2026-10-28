@@ -1,30 +1,70 @@
-# Я делаю контракт доступным для чтения отдельно от реализации.
+# Я описываю здесь контракт: какие поля и значения разрешено запрашивать.
+# Я не храню в этом файле обращения. Само хранилище находится в app.js.
+
+# Я перечисляю допустимые статусы. Произвольную строку вроде ARCHIVED не принимаю.
+# Проверку порядка переходов я отдельно выполняю в changeStatus в app.js.
 enum TicketStatus { OPEN IN_PROGRESS RESOLVED }
+# Я различаю клиента и сотрудника. Конкретную персону выбираю заголовком запроса.
 enum DemoRole { CUSTOMER STAFF }
 
-type DemoUser { id: ID!, label: String!, role: DemoRole! }
+# Я возвращаю только три публичных свойства вымышленной персоны.
+type DemoUser {
+  # Я использую ID как идентификатор. В примерах это строка customer-a.
+  id: ID!
+  # Я добавляю !, когда обещаю непустое в смысле null значение при успешном выполнении поля.
+  # Пустая строка сама по себе не запрещена типом String!: длину я проверяю отдельно.
+  label: String!
+  role: DemoRole!
+}
+# Я возвращаю простую доступность и версию даже без выбранной роли.
 type Health { status: String!, version: String! }
+
 type Ticket {
   id: ID!
   title: String!
   description: String!
   status: TicketStatus!
+  # Я возвращаю объект владельца; внутри запроса выбираю его id, label или role.
   owner: DemoUser!
+  # Я разрешаю null: клиенту я скрываю заметку, сохраняя разрешённые поля ticket.
   internalNote: String
 }
+# Я возвращаю ожидаемую бизнес-ошибку как обычные данные операции.
+# Я не делаю UserError частью встроенного верхнеуровневого GraphQL errors.
 type UserError { code: String!, field: String, message: String! }
-type TicketPayload { ticket: Ticket, userErrors: [UserError!]! }
+
+type TicketPayload {
+  # Я допускаю null при бизнес-отказе, например пустом заголовке.
+  ticket: Ticket
+  # Я всегда возвращаю массив без null-элементов; при успехе он может быть пустым [].
+  userErrors: [UserError!]!
+}
+# Я подтверждаю, сколько исходных обращений восстановил reset.
 type DemoReset { count: Int! }
-input CreateTicketInput { title: String!, description: String! }
+
+# Я использую input для значений, которые получаю от клиента.
+# Выходной type и входной input выполняют разные задачи, даже если поля похожи.
+input CreateTicketInput {
+  # Я требую само значение, а длину 3–80 после trim проверяю уже в app.js.
+  title: String!
+  # Я разрешаю пустую строку, но не null; верхняя граница длины — 500 в app.js.
+  description: String!
+}
 input ChangeStatusInput { id: ID!, status: TicketStatus! }
 
+# Я начинаю все операции чтения с полей корневого типа Query.
 type Query {
   health: Health!
   me: DemoUser
+  # Я обязательно передаю id, но результат может отсутствовать: Ticket без !.
   ticket(id: ID!): Ticket
+  # Я использую first=10, если аргумент вообще не передан.
+  # [Ticket!] допускает null всего списка, но не допускает null внутри успешного массива.
   tickets(status: TicketStatus, first: Int = 10): [Ticket!]
 }
+# Я начинаю действия с записью с корневого типа Mutation.
 type Mutation {
+  # Я разрешаю reset только staff; при отказе верхнеуровневое поле будет null.
   resetDemo: DemoReset
   createTicket(input: CreateTicketInput!): TicketPayload
   changeStatus(input: ChangeStatusInput!): TicketPayload

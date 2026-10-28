@@ -34,3 +34,27 @@ assert {
   res.body.data: isUndefined
   res.body.errors: isNotEmpty
 }
+
+docs {
+  ## 14-invalid-enum: Я отправляю значение вне enum.
+
+  ### Зачем я это делаю
+
+  Я передаю ARCHIVED, которого нет в TicketStatus. Я ожидаю отказ проверки входа до вызова changeStatus.
+
+  ### Что я отправляю
+
+  Я выбираю роль: `staff`. Я отправляю POST на адрес окружения baseUrl с путём /graphql. Я сохраняю Content-Type application/json и Accept application/graphql-response+json.
+
+  ### Как я читаю Assert
+
+  - Я проверяю `res.status`: равенство с ожидаемым значением `400`.
+  - Я проверяю `res.body.data`: отсутствие поля.
+  - Я проверяю `res.body.errors`: непустое значение.
+
+  ### Что я могу изменить
+
+  Я заменяю ARCHIVED на IN_PROGRESS и проверяю разрешённую mutation после reset и 11. Я не путаю enum с правилом порядка переходов.
+
+  Я выполняю опыт в копии запроса. Перед возвратом к регрессии я начинаю весь набор заново с reset.
+}

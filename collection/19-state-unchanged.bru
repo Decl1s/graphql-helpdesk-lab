@@ -30,3 +30,28 @@ assert {
   res.body.data.ticket.internalNote: isString
   res.body.errors: isUndefined
 }
+
+docs {
+  ## 19-state-unchanged: Я проверяю состояние после запрещённого перехода.
+
+  ### Зачем я это делаю
+
+  Я перечитываю обращение и ожидаю RESOLVED. В роли staff я также имею доступ к внутренней заметке.
+
+  ### Что я отправляю
+
+  Я выбираю роль: `staff`. Я отправляю POST на адрес окружения baseUrl с путём /graphql. Я сохраняю Content-Type application/json и Accept application/graphql-response+json.
+
+  ### Как я читаю Assert
+
+  - Я проверяю `res.status`: равенство с ожидаемым значением `200`.
+  - Я проверяю `res.body.data.ticket.status`: равенство с ожидаемым значением `RESOLVED`.
+  - Я проверяю `res.body.data.ticket.internalNote`: строковый тип.
+  - Я проверяю `res.body.errors`: отсутствие поля.
+
+  ### Что я могу изменить
+
+  Я меняю роль на customer-a и оставляю internalNote: я ожидаю частичный ответ и FORBIDDEN для заметки.
+
+  Я выполняю опыт в копии запроса. Перед возвратом к регрессии я начинаю весь набор заново с reset.
+}

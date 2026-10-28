@@ -1,0 +1,7 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    { "name": "Я разбираю обычный сервер", "type": "node", "request": "launch", "program": "${workspaceFolder}/src/server.js", "cwd": "${workspaceFolder}", "console": "integratedTerminal", "skipFiles": ["<node_internals>/**"] },
+    { "name": "Я разбираю учебный дефект", "type": "node", "request": "launch", "program": "${workspaceFolder}/src/server.js", "args": ["--training-bug"], "cwd": "${workspaceFolder}", "console": "integratedTerminal", "skipFiles": ["<node_internals>/**"] }
+  ]
+}

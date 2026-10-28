@@ -29,3 +29,27 @@ assert {
   res.body.data: isUndefined
   res.body.errors: isNotEmpty
 }
+
+docs {
+  ## 09-unknown-field: Я запрашиваю поле, которого нет в схеме.
+
+  ### Зачем я это делаю
+
+  Я использую password как заведомо неизвестное поле. При моём Accept сервер отклоняет документ до выполнения и не возвращает data.
+
+  ### Что я отправляю
+
+  Я выбираю роль: `customer-a`. Я отправляю POST на адрес окружения baseUrl с путём /graphql. Я сохраняю Content-Type application/json и Accept application/graphql-response+json.
+
+  ### Как я читаю Assert
+
+  - Я проверяю `res.status`: равенство с ожидаемым значением `400`.
+  - Я проверяю `res.body.data`: отсутствие поля.
+  - Я проверяю `res.body.errors`: непустое значение.
+
+  ### Что я могу изменить
+
+  Я заменяю password на title. Я ожидаю HTTP 200 и data.ticket.title. Это изменение самого проверяемого сценария.
+
+  Я выполняю опыт в копии запроса. Перед возвратом к регрессии я начинаю весь набор заново с reset.
+}

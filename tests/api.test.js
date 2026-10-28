@@ -1,16 +1,23 @@
+// Я использую тестовый runner, встроенный в Node, без ещё одного фреймворка.
 import test from 'node:test';
+// Я делаю строгие сравнения: строка и число не считаются одинаковыми автоматически.
 import assert from 'node:assert/strict';
 import { listen } from '../src/app.js';
 
+// Я создаю помощник для теста: отдельный сервер и функцию отправки HTTP-запроса.
 async function fixture(t, trainingBug = false) {
   const app = await listen({ trainingBug });
+  // Я регистрирую завершение сервера даже при падении утверждения внутри теста.
   t.after(() => app.close());
+  // Я задаю удобные значения по умолчанию. В конкретном кейсе могу подменить variables или actor.
   return async (query, variables = {}, actor = 'customer-a') => {
+    // Я отправляю настоящий HTTP POST, а не вызываю резолвер напрямую.
     const response = await fetch(`${app.baseUrl}/graphql`, { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/graphql-response+json', ...(actor ? { 'X-Demo-Actor': actor } : {}) }, body: JSON.stringify({ query, variables }) });
     return { status: response.status, body: await response.json() };
   };
 }
 
+// Я проверяю результат чтения и ограничения страницы на независимом наборе.
 test('Я получаю только свои обращения и ограничиваю список', async t => {
   const send = await fixture(t);
   const { body } = await send('query { tickets { id owner { id } } }');
@@ -20,6 +27,7 @@ test('Я получаю только свои обращения и ограни
     assert.equal(bad.body.errors[0].extensions.code, 'BAD_USER_INPUT');
   }
 });
+// Я проверяю одновременно HTTP, разрешённый id, null заметки и точный путь отказа.
 test('Я сохраняю частичный ответ и путь ошибки приватного поля', async t => {
   const send = await fixture(t);
   const { status, body } = await send('query { ticket(id:"T-1001") { id internalNote } }');
@@ -29,6 +37,7 @@ test('Я сохраняю частичный ответ и путь ошибки
   assert.deepEqual(body.errors[0].path, ['ticket', 'internalNote']);
   assert.equal(body.errors[0].extensions.code, 'FORBIDDEN');
 });
+// Я проверяю обычный отказ доступа и неожиданные имена, которые не должны превращаться в роли.
 test('Я отклоняю чужое обращение, неизвестную роль и отсутствующую роль', async t => {
   const send = await fixture(t);
   assert.equal((await send('query { ticket(id:"T-1002") { id } }')).body.errors[0].extensions.code, 'FORBIDDEN');
@@ -36,6 +45,7 @@ test('Я отклоняю чужое обращение, неизвестную 
     assert.equal((await send('query { me { id } }', {}, actor)).body.errors[0].extensions.code, 'UNAUTHENTICATED');
   }
 });
+// Я выбираю значения у границ контракта и подтверждаю, что отказ не расходует ID.
 test('Я проверяю границы title и description без расходования ID на отказ', async t => {
   const send = await fixture(t);
   const query = 'mutation($input: CreateTicketInput!) { createTicket(input:$input) { ticket { id title } userErrors { code } } }';
@@ -48,6 +58,7 @@ test('Я проверяю границы title и description без расхо�
   assert.equal(created.body.data.createTicket.ticket.title, 'abc');
   assert.equal((await send(query, { input: { title: 'x'.repeat(80), description: '' } })).body.data.createTicket.userErrors.length, 0);
 });
+// Я подтверждаю разрешённые переходы, запрет клиенту и сохранение статуса после отказа.
 test('Я проверяю автомат статусов и отсутствие записи после отказа', async t => {
   const send = await fixture(t);
   const query = 'mutation($input: ChangeStatusInput!) { changeStatus(input:$input) { ticket { status } userErrors { code } } }';
@@ -58,6 +69,7 @@ test('Я проверяю автомат статусов и отсутстви�
   assert.equal((await change('T-1001', 'OPEN')).body.data.changeStatus.userErrors[0].code, 'BAD_TRANSITION');
   assert.equal((await send('query { ticket(id:"T-1001") { status } }')).body.data.ticket.status, 'RESOLVED');
 });
+// Я передаю ошибки GraphQL и убеждаюсь, что mutation не выполнилась.
 test('Я отличаю ошибку GraphQL-контракта от выполнения mutation', async t => {
   const send = await fixture(t);
   for (const [query, variables] of [
@@ -72,6 +84,7 @@ test('Я отличаю ошибку GraphQL-контракта от выпол�
   }
   assert.equal((await send('query { ticket(id:"T-1001") { status } }')).body.data.ticket.status, 'OPEN');
 });
+// Я сравниваю два экземпляра, чтобы не принять общее глобальное состояние за изоляцию.
 test('Я сбрасываю состояние только сотрудником и не делю его между серверами', async t => {
   const send = await fixture(t);
   assert.equal((await send('mutation { resetDemo { count } }')).body.errors[0].extensions.code, 'FORBIDDEN');
@@ -81,6 +94,7 @@ test('Я сбрасываю состояние только сотруднико
   assert.equal((await send('mutation { resetDemo { count } }', {}, 'staff')).body.data.resetDemo.count, 3);
   assert.equal((await send('query { ticket(id:"T-1001") { status } }')).body.data.ticket.status, 'OPEN');
 });
+// Я подтверждаю поведение режима дефекта. Успех этого теста не означает, что дефект разрешён в обычном режиме.
 test('Я воспроизвожу намеренный дефект только явным флагом', async t => {
   const send = await fixture(t, true);
   const { body } = await send('mutation { changeStatus(input:{id:"T-1001",status:IN_PROGRESS}) { ticket { status } } }');

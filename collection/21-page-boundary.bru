@@ -29,3 +29,27 @@ assert {
   res.body.data.tickets: isNull
   res.body.errors[0].extensions.code: eq BAD_USER_INPUT
 }
+
+docs {
+  ## 21-page-boundary: Я проверяю нижнюю границу размера списка.
+
+  ### Зачем я это делаю
+
+  Я передаю first=0: аргумент имеет допустимый GraphQL-тип Int, но нарушает бизнес-правило 1–20. Поэтому отказ возникает при выполнении поля.
+
+  ### Что я отправляю
+
+  Я выбираю роль: `customer-a`. Я отправляю POST на адрес окружения baseUrl с путём /graphql. Я сохраняю Content-Type application/json и Accept application/graphql-response+json.
+
+  ### Как я читаю Assert
+
+  - Я проверяю `res.status`: равенство с ожидаемым значением `200`.
+  - Я проверяю `res.body.data.tickets`: значение null.
+  - Я проверяю `res.body.errors[0].extensions.code`: равенство с ожидаемым значением `BAD_USER_INPUT`.
+
+  ### Что я могу изменить
+
+  Я проверяю first=1, 20 и 21. Первые два значения допустимы; 21 должно дать BAD_USER_INPUT.
+
+  Я выполняю опыт в копии запроса. Перед возвратом к регрессии я начинаю весь набор заново с reset.
+}

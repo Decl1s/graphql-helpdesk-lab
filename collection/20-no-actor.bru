@@ -28,3 +28,27 @@ assert {
   res.body.data.me: isNull
   res.body.errors[0].extensions.code: eq UNAUTHENTICATED
 }
+
+docs {
+  ## 20-no-actor: Я отправляю запрос без выбранной персоны.
+
+  ### Зачем я это делаю
+
+  Я намеренно не задаю X-Demo-Actor. Поле me должно отказать с UNAUTHENTICATED, даже если HTTP сообщает 200.
+
+  ### Что я отправляю
+
+  Я выбираю роль: `не передаю заголовок`. Я отправляю POST на адрес окружения baseUrl с путём /graphql. Я сохраняю Content-Type application/json и Accept application/graphql-response+json.
+
+  ### Как я читаю Assert
+
+  - Я проверяю `res.status`: равенство с ожидаемым значением `200`.
+  - Я проверяю `res.body.data.me`: значение null.
+  - Я проверяю `res.body.errors[0].extensions.code`: равенство с ожидаемым значением `UNAUTHENTICATED`.
+
+  ### Что я могу изменить
+
+  Я добавляю заголовок customer-a и ожидаю объект me. Затем я пробую неизвестное значение и ожидаю прежний отказ.
+
+  Я выполняю опыт в копии запроса. Перед возвратом к регрессии я начинаю весь набор заново с reset.
+}

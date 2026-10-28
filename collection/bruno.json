@@ -1,6 +1,9 @@
 {
   "version": "1",
-  "name": "Я проверяю GraphQL — Helpdesk Lab",
+  "name": "Я учусь GraphQL — полная копия с пояснениями",
   "type": "collection",
-  "ignore": ["node_modules", ".git"]
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
 }

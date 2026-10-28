@@ -30,3 +30,28 @@ assert {
   res.body.data.changeStatus.userErrors: length 0
   res.body.errors: isUndefined
 }
+
+docs {
+  ## 16-staff-start: Я выполняю первый разрешённый переход сотрудником.
+
+  ### Зачем я это делаю
+
+  Я начинаю с OPEN и получаю IN_PROGRESS. Если 15 уже изменил статус из-за дефекта, этот запрос откажет: это следствие первого сбоя.
+
+  ### Что я отправляю
+
+  Я выбираю роль: `staff`. Я отправляю POST на адрес окружения baseUrl с путём /graphql. Я сохраняю Content-Type application/json и Accept application/graphql-response+json.
+
+  ### Как я читаю Assert
+
+  - Я проверяю `res.status`: равенство с ожидаемым значением `200`.
+  - Я проверяю `res.body.data.changeStatus.ticket.status`: равенство с ожидаемым значением `IN_PROGRESS`.
+  - Я проверяю `res.body.data.changeStatus.userErrors`: длину массива с ожидаемым значением `0`.
+  - Я проверяю `res.body.errors`: отсутствие поля.
+
+  ### Что я могу изменить
+
+  Я отправляю этот запрос второй раз без reset и ожидаю BAD_TRANSITION: повтор текущего статуса здесь запрещён.
+
+  Я выполняю опыт в копии запроса. Перед возвратом к регрессии я начинаю весь набор заново с reset.
+}
