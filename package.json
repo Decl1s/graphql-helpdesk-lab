@@ -1,0 +1,35 @@
+{
+  "name": "graphql-helpdesk-lab",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Я проверяю GraphQL через готовую low-code коллекцию Bruno",
+  "engines": {
+    "node": ">=24.22.0 <25"
+  },
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "node --test tests/*.test.js",
+    "demo": "node scripts/run-collection.js",
+    "package": "node scripts/package-release.js",
+    "check": "node scripts/ci.js"
+  },
+  "dependencies": {
+    "graphql": "17.0.2",
+    "graphql-yoga": "6.0.1"
+  },
+  "devDependencies": {
+    "@usebruno/cli": "4.3.0",
+    "fflate": "0.8.3"
+  },
+  "overrides": {
+    "axios": "1.21.0",
+    "csv-parse": "7.0.3",
+    "form-data": "4.0.6",
+    "js-yaml": "4.3.2",
+    "uuid": "11.1.1",
+    "yaml": "2.9.1",
+    "@faker-js/faker": "10.6.0",
+    "@azure/msal-node": "7.1.2"
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "version": "1",
+  "name": "Я проверяю GraphQL — Helpdesk Lab",
+  "type": "collection",
+  "ignore": ["node_modules", ".git"]
+}

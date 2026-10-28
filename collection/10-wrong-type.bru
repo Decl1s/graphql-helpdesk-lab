@@ -1,0 +1,33 @@
+meta {
+  name: Я передаю неверный тип переменной
+  type: graphql
+  seq: 11
+}
+
+post {
+  url: {{baseUrl}}/graphql
+  body: graphql
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Accept: application/graphql-response+json
+  X-Demo-Actor: customer-a
+}
+
+body:graphql {
+  query Ticket($id: ID!) { ticket(id: $id) { id } }
+}
+
+body:graphql:vars {
+  {
+    "id": true
+  }
+}
+
+assert {
+  res.status: eq 400
+  res.body.data: isUndefined
+  res.body.errors: isNotEmpty
+}

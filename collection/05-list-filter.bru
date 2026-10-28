@@ -1,0 +1,35 @@
+meta {
+  name: Я ограничиваю и фильтрую список
+  type: graphql
+  seq: 6
+}
+
+post {
+  url: {{baseUrl}}/graphql
+  body: graphql
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Accept: application/graphql-response+json
+  X-Demo-Actor: customer-a
+}
+
+body:graphql {
+  query List($status: TicketStatus!, $first: Int!) { tickets(status: $status, first: $first) { id status } }
+}
+
+body:graphql:vars {
+  {
+    "status": "OPEN",
+    "first": 1
+  }
+}
+
+assert {
+  res.status: eq 200
+  res.body.data.tickets: length 1
+  res.body.data.tickets[0].id: eq T-1001
+  res.body.errors: isUndefined
+}

@@ -1,0 +1,33 @@
+meta {
+  name: Я использую aliases и fragment
+  type: graphql
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}/graphql
+  body: graphql
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Accept: application/graphql-response+json
+  X-Demo-Actor: customer-a
+}
+
+body:graphql {
+  query { current: ticket(id: "T-1001") { ...Summary } closed: ticket(id: "T-1003") { ...Summary } }
+  fragment Summary on Ticket { id status }
+}
+
+body:graphql:vars {
+  {}
+}
+
+assert {
+  res.status: eq 200
+  res.body.data.current.status: eq OPEN
+  res.body.data.closed.status: eq RESOLVED
+  res.body.errors: isUndefined
+}

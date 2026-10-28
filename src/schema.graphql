@@ -1,0 +1,31 @@
+# Я делаю контракт доступным для чтения отдельно от реализации.
+enum TicketStatus { OPEN IN_PROGRESS RESOLVED }
+enum DemoRole { CUSTOMER STAFF }
+
+type DemoUser { id: ID!, label: String!, role: DemoRole! }
+type Health { status: String!, version: String! }
+type Ticket {
+  id: ID!
+  title: String!
+  description: String!
+  status: TicketStatus!
+  owner: DemoUser!
+  internalNote: String
+}
+type UserError { code: String!, field: String, message: String! }
+type TicketPayload { ticket: Ticket, userErrors: [UserError!]! }
+type DemoReset { count: Int! }
+input CreateTicketInput { title: String!, description: String! }
+input ChangeStatusInput { id: ID!, status: TicketStatus! }
+
+type Query {
+  health: Health!
+  me: DemoUser
+  ticket(id: ID!): Ticket
+  tickets(status: TicketStatus, first: Int = 10): [Ticket!]
+}
+type Mutation {
+  resetDemo: DemoReset
+  createTicket(input: CreateTicketInput!): TicketPayload
+  changeStatus(input: ChangeStatusInput!): TicketPayload
+}

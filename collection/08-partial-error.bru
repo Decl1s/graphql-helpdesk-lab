@@ -1,0 +1,33 @@
+meta {
+  name: Я проверяю частичный ответ
+  type: graphql
+  seq: 9
+}
+
+post {
+  url: {{baseUrl}}/graphql
+  body: graphql
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Accept: application/graphql-response+json
+  X-Demo-Actor: customer-a
+}
+
+body:graphql {
+  query { ticket(id: "T-1001") { id title internalNote } }
+}
+
+body:graphql:vars {
+  {}
+}
+
+assert {
+  res.status: eq 200
+  res.body.data.ticket.id: eq T-1001
+  res.body.data.ticket.internalNote: isNull
+  res.body.errors[0].extensions.code: eq FORBIDDEN
+  res.body.errors[0].path[1]: eq internalNote
+}

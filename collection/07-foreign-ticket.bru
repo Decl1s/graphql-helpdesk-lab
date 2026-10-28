@@ -1,0 +1,32 @@
+meta {
+  name: Я проверяю запрет чужого обращения
+  type: graphql
+  seq: 8
+}
+
+post {
+  url: {{baseUrl}}/graphql
+  body: graphql
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Accept: application/graphql-response+json
+  X-Demo-Actor: customer-a
+}
+
+body:graphql {
+  query { ticket(id: "T-1002") { id title } }
+}
+
+body:graphql:vars {
+  {}
+}
+
+assert {
+  res.status: eq 200
+  res.body.data.ticket: isNull
+  res.body.errors[0].extensions.code: eq FORBIDDEN
+  res.body.errors[0].path[0]: eq ticket
+}

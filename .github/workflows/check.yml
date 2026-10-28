@@ -1,0 +1,40 @@
+name: Я проверяю GraphQL Helpdesk Lab
+on:
+  push:
+    branches: [main, 'codex/**']
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  checks:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '24.22.0'
+          cache: npm
+      - run: npm ci --ignore-scripts --no-fund
+      - run: npm audit --audit-level=moderate
+      - run: npm run check
+  release:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && github.repository == 'Decl1s/graphql-helpdesk-lab'
+    needs: checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '24.22.0'
+      - run: npm ci --ignore-scripts --no-fund
+      - run: node scripts/publish-release.js
+        env:
+          GITHUB_TOKEN: ${{ github.token }}

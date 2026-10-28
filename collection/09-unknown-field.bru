@@ -1,0 +1,31 @@
+meta {
+  name: Я проверяю неизвестное поле
+  type: graphql
+  seq: 10
+}
+
+post {
+  url: {{baseUrl}}/graphql
+  body: graphql
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Accept: application/graphql-response+json
+  X-Demo-Actor: customer-a
+}
+
+body:graphql {
+  query { ticket(id: "T-1001") { id password } }
+}
+
+body:graphql:vars {
+  {}
+}
+
+assert {
+  res.status: eq 400
+  res.body.data: isUndefined
+  res.body.errors: isNotEmpty
+}

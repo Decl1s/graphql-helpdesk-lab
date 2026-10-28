@@ -1,0 +1,30 @@
+meta {
+  name: Я проверяю отсутствие роли
+  type: graphql
+  seq: 21
+}
+
+post {
+  url: {{baseUrl}}/graphql
+  body: graphql
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Accept: application/graphql-response+json
+}
+
+body:graphql {
+  query { me { id } }
+}
+
+body:graphql:vars {
+  {}
+}
+
+assert {
+  res.status: eq 200
+  res.body.data.me: isNull
+  res.body.errors[0].extensions.code: eq UNAUTHENTICATED
+}

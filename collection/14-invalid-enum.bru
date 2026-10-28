@@ -1,0 +1,36 @@
+meta {
+  name: Я передаю несуществующий статус
+  type: graphql
+  seq: 15
+}
+
+post {
+  url: {{baseUrl}}/graphql
+  body: graphql
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Accept: application/graphql-response+json
+  X-Demo-Actor: staff
+}
+
+body:graphql {
+  mutation Change($input: ChangeStatusInput!) { changeStatus(input: $input) { ticket { id status } userErrors { code } } }
+}
+
+body:graphql:vars {
+  {
+    "input": {
+      "id": "T-2001",
+      "status": "ARCHIVED"
+    }
+  }
+}
+
+assert {
+  res.status: eq 400
+  res.body.data: isUndefined
+  res.body.errors: isNotEmpty
+}

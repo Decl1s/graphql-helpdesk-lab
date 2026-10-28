@@ -1,0 +1,32 @@
+meta {
+  name: Я завершаю обращение
+  type: graphql
+  seq: 18
+}
+
+post {
+  url: {{baseUrl}}/graphql
+  body: graphql
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Accept: application/graphql-response+json
+  X-Demo-Actor: staff
+}
+
+body:graphql {
+  mutation { changeStatus(input: { id: "T-2001", status: RESOLVED }) { ticket { id status } userErrors { code } } }
+}
+
+body:graphql:vars {
+  {}
+}
+
+assert {
+  res.status: eq 200
+  res.body.data.changeStatus.ticket.status: eq RESOLVED
+  res.body.data.changeStatus.userErrors: length 0
+  res.body.errors: isUndefined
+}

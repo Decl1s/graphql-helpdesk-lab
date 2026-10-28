@@ -1,0 +1,31 @@
+meta {
+  name: Я отличаю отсутствие от ошибки
+  type: graphql
+  seq: 7
+}
+
+post {
+  url: {{baseUrl}}/graphql
+  body: graphql
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Accept: application/graphql-response+json
+  X-Demo-Actor: customer-a
+}
+
+body:graphql {
+  query { ticket(id: "T-9999") { id } }
+}
+
+body:graphql:vars {
+  {}
+}
+
+assert {
+  res.status: eq 200
+  res.body.data.ticket: isNull
+  res.body.errors: isUndefined
+}

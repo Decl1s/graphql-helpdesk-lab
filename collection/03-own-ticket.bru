@@ -1,0 +1,34 @@
+meta {
+  name: Я читаю своё обращение и владельца
+  type: graphql
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/graphql
+  body: graphql
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Accept: application/graphql-response+json
+  X-Demo-Actor: customer-a
+}
+
+body:graphql {
+  query Ticket($id: ID!) { ticket(id: $id) { id title status owner { id role } } }
+}
+
+body:graphql:vars {
+  {
+    "id": "T-1001"
+  }
+}
+
+assert {
+  res.status: eq 200
+  res.body.data.ticket.id: eq T-1001
+  res.body.data.ticket.owner.id: eq customer-a
+  res.body.errors: isUndefined
+}

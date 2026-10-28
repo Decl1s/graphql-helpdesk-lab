@@ -1,0 +1,10 @@
+node_modules/
+reports/
+dist/
+.env*
+!.env.example
+*.log
+.DS_Store
+.bru/
+.vscode/*.local.json
+AGENTS.md

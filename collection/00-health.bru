@@ -1,0 +1,30 @@
+meta {
+  name: Я проверяю доступность
+  type: graphql
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/graphql
+  body: graphql
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Accept: application/graphql-response+json
+}
+
+body:graphql {
+  query { health { status version } }
+}
+
+body:graphql:vars {
+  {}
+}
+
+assert {
+  res.status: eq 200
+  res.body.data.health.status: eq ok
+  res.body.errors: isUndefined
+}

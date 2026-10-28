@@ -1,0 +1,39 @@
+meta {
+  name: Я создаю демо-обращение
+  type: graphql
+  seq: 12
+}
+
+post {
+  url: {{baseUrl}}/graphql
+  body: graphql
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Accept: application/graphql-response+json
+  X-Demo-Actor: customer-a
+}
+
+body:graphql {
+  mutation Create($input: CreateTicketInput!) { createTicket(input: $input) { ticket { id title status owner { id } } userErrors { code field } } }
+}
+
+body:graphql:vars {
+  {
+    "input": {
+      "title": "  Проверка формы  ",
+      "description": "Синтетическое обращение из коллекции"
+    }
+  }
+}
+
+assert {
+  res.status: eq 200
+  res.body.data.createTicket.ticket.id: eq T-2001
+  res.body.data.createTicket.ticket.title: eq Проверка формы
+  res.body.data.createTicket.ticket.status: eq OPEN
+  res.body.data.createTicket.userErrors: length 0
+  res.body.errors: isUndefined
+}

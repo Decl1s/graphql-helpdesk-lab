@@ -1,0 +1,32 @@
+meta {
+  name: Я проверяю выбранную роль
+  type: graphql
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/graphql
+  body: graphql
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Accept: application/graphql-response+json
+  X-Demo-Actor: customer-a
+}
+
+body:graphql {
+  query { me { id role label } }
+}
+
+body:graphql:vars {
+  {}
+}
+
+assert {
+  res.status: eq 200
+  res.body.data.me.id: eq customer-a
+  res.body.data.me.role: eq CUSTOMER
+  res.body.errors: isUndefined
+}
