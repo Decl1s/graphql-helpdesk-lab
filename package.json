@@ -1,6 +1,6 @@
 {
   "name": "graphql-helpdesk-lab",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "type": "module",
   "description": "Я проверяю GraphQL через готовую low-code коллекцию Bruno",

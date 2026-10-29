@@ -25,7 +25,7 @@ let release = await api(`/releases/tags/${tag}`);
 if (!release) {
   const drafts = (await api('/releases?per_page=100')).filter(x => x.tag_name === tag);
   if (drafts.length > 1) throw new Error('Я обнаружил несколько черновиков');
-  release = drafts[0] ?? await api('/releases', 'POST', { tag_name: tag, target_commitish: sha, name: `Мой GraphQL Helpdesk Lab ${pkg.version}`, draft: true, prerelease: false, body: 'Я выпускаю учебный low-code QA-стенд: 22 GraphQL-запроса и 83 декларативные проверки Bruno, демо-роли, частичные ошибки и контролируемый дефект прав. Я начинаю с GUIDE.md, сверяю контракт с TEST_PLAN.md, разбираю решения в NOTES.md. ZIP содержит только разрешённые исходники; отчёты, окружение и контакты я не включаю.' });
+  release = drafts[0] ?? await api('/releases', 'POST', { tag_name: tag, target_commitish: sha, name: `Мой GraphQL Helpdesk Lab ${pkg.version}`, draft: true, prerelease: false, body: 'Я обновил навигацию документации и согласовал patch-версию исходного архива. Бизнес-правила и зависимости я сохранил. Я выпускаю учебный low-code QA-стенд: 22 GraphQL-запроса и 83 декларативные проверки Bruno, демо-роли, частичные ошибки и контролируемый дефект прав. Я начинаю с GUIDE.md, сверяю контракт с TEST_PLAN.md, разбираю решения в NOTES.md. ZIP содержит только разрешённые исходники; отчёты, окружение и контакты я не включаю.' });
 }
 if (release.target_commitish !== sha) throw new Error('Я не перезаписываю чужой релиз');
 const assets = await api(`/releases/${release.id}/assets`);

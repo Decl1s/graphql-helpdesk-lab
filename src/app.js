@@ -36,7 +36,7 @@ export function createApp({ trainingBug = false } = {}) {
   }
   const resolvers = {
     Query: {
-      health: () => ({ status: 'ok', version: '0.1.0' }),
+      health: () => ({ status: 'ok', version: '0.1.1' }),
       me: (_, args, context) => actor(context),
       ticket: (_, { id }, context) => {
         const user = actor(context);
